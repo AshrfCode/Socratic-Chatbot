@@ -1,9 +1,9 @@
 import "./App.css";
 import Header from "./components/Header";
 import ProgressBar from "./components/ProgressBar";
-import ChatBox from "./components/ChatBox";
-import SidePanel from "./components/SidePanel";
-import DashboardPreview from "./components/DashboardPreview";
+import ChatBox from "./components/Chat/ChatBox";
+import SidePanel from "./components/SidePanel/SidePanel";
+import DashboardPreview from "./components/Dashboard/DashboardPreview";
 
 function App() {
   return (

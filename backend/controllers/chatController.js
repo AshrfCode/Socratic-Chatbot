@@ -1,101 +1,183 @@
-const Message = require("../models/Message");
+const Chat = require("../models/Chat");
 const Session = require("../models/Session");
+const Message = require("../models/Message");
+const ControlGroupLog = require("../models/ControlGroupLog");
+const StudentProgress = require("../models/StudentProgress");
+
 const {
-  evaluateStudentAnswer,
+  generateSocraticResponse,
+  generateSocraticHint,
+} = require("../services/geminiService");
+
+const {
+  evaluateStudentMessage,
 } = require("../services/aiEvaluationService");
-
-function formatMessage(message) {
-  return {
-    _id: message._id,
-    chatId: message.chatId,
-    sender: message.sender,
-    text: message.text,
-    time: message.createdAt.toLocaleTimeString("en-US", {
-      hour: "2-digit",
-      minute: "2-digit",
-    }),
-  };
-}
-
-function addGateIfMissing(session, gate) {
-  if (!session.unlockedGates.includes(gate)) {
-    session.unlockedGates.push(gate);
-  }
-}
 
 async function getChatMessages(req, res) {
   try {
     const { chatId } = req.params;
 
-    const messages = await Message.find({ chatId }).sort({ createdAt: 1 });
+    const messages = await Message.find({ chatId }).sort({ timestamp: 1 });
 
-    res.json(messages.map(formatMessage));
+    res.json(messages);
   } catch (error) {
     res.status(500).json({
-      message: "Failed to load chat messages",
+      message: "Failed to load messages",
       error: error.message,
     });
   }
 }
 
-async function addChatMessage(req, res) {
+async function sendMessage(req, res) {
   try {
-    const { chatId, sender, text } = req.body;
+    const { chatId } = req.params;
+    const { sessionId, studentId, text } = req.body;
 
-    if (!chatId || !sender || !text) {
-      return res.status(400).json({
-        message: "chatId, sender and text are required",
+    const session = await Session.findById(sessionId);
+
+    if (!session) {
+      return res.status(404).json({
+        message: "Session not found",
       });
     }
 
-    const newMessage = await Message.create({
+    const userMessage = await Message.create({
       chatId,
-      sender,
+      sessionId,
+      studentId,
+      sender: "user",
       text,
+      layer: session.currentLayer,
     });
 
-    if (sender === "user") {
-      const evaluation = await evaluateStudentAnswer(text);
-
-      const session = await Session.findOne({ chatId });
-
-      if (session) {
-        if (evaluation.goalDefined) {
-          addGateIfMissing(session, "Goal defined");
-        }
-
-        if (evaluation.stakeholdersIdentified) {
-          addGateIfMissing(session, "Stakeholders identified");
-        }
-
-        if (evaluation.causeEffectDetected) {
-          addGateIfMissing(session, "Cause-effect identified");
-        }
-
-        if (evaluation.feedbackLoopDetected) {
-          addGateIfMissing(session, "Feedback loop identified");
-        }
-
-        await session.save();
-      }
-
-      const botMessage = await Message.create({
-        chatId,
-        sender: "bot",
-        text: evaluation.botResponse,
+    if (session.group === "Control Group") {
+      await ControlGroupLog.create({
+        studentId,
+        sessionId,
+        text,
       });
 
-      return res.status(201).json({
-        userMessage: formatMessage(newMessage),
-        botMessage: formatMessage(botMessage),
-        evaluation,
+      const updatedSession = await evaluateStudentMessage({
+        studentId,
+        sessionId,
+        messageText: text,
+      });
+
+      return res.json({
+        userMessage,
+        botMessage: null,
+        session: updatedSession,
+        controlGroup: true,
       });
     }
 
-    res.status(201).json(formatMessage(newMessage));
+    const chatHistory = await Message.find({ chatId }).sort({ timestamp: 1 });
+
+    const progressDoc = await StudentProgress.findOne({ sessionId });
+
+    const botText = await generateSocraticResponse({
+      studentMessage: text,
+      currentLayer: session.currentLayer,
+      chatHistory,
+      unlockedGates: session.unlockedGates,
+      progress: progressDoc?.progress || 0,
+      hintsUsed: session.hintsUsed,
+      lastBotQuestions: session.lastBotQuestions,
+    });
+
+    const botMessage = await Message.create({
+      chatId,
+      sessionId,
+      studentId,
+      sender: "bot",
+      text: botText,
+      layer: session.currentLayer,
+    });
+
+    if (!session.lastBotQuestions) {
+      session.lastBotQuestions = [];
+    }
+
+    session.lastBotQuestions.push(botText);
+
+    if (session.lastBotQuestions.length > 10) {
+      session.lastBotQuestions.shift();
+    }
+
+    await session.save();
+
+    const updatedSession = await evaluateStudentMessage({
+      studentId,
+      sessionId,
+      messageText: text,
+    });
+
+    res.json({
+      userMessage,
+      botMessage,
+      session: updatedSession,
+      controlGroup: false,
+    });
   } catch (error) {
     res.status(500).json({
-      message: "Failed to save chat message",
+      message: "Failed to send message",
+      error: error.message,
+    });
+  }
+}
+
+async function getHint(req, res) {
+  try {
+    const { chatId } = req.params;
+    const { sessionId, studentId } = req.body;
+
+    const session = await Session.findById(sessionId);
+
+    if (!session) {
+      return res.status(404).json({
+        message: "Session not found",
+      });
+    }
+
+    if (session.group === "Control Group") {
+      return res.status(403).json({
+        message: "Control group cannot use AI hints",
+      });
+    }
+
+    const hintText = await generateSocraticHint({
+      currentLayer: session.currentLayer,
+      hintsUsed: session.hintsUsed,
+      unlockedGates: session.unlockedGates,
+    });
+
+    session.hintsUsed += 1;
+    await session.save();
+
+    const hintMessage = await Message.create({
+      chatId,
+      sessionId,
+      studentId,
+      sender: "bot",
+      text: hintText,
+      layer: session.currentLayer,
+    });
+
+    await StudentProgress.findOneAndUpdate(
+      { sessionId },
+      {
+        hintsUsed: session.hintsUsed,
+      },
+      { new: true }
+    );
+
+    res.json({
+      hintMessage,
+      session,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Failed to generate hint",
       error: error.message,
     });
   }
@@ -103,5 +185,6 @@ async function addChatMessage(req, res) {
 
 module.exports = {
   getChatMessages,
-  addChatMessage,
+  sendMessage,
+  getHint,
 };

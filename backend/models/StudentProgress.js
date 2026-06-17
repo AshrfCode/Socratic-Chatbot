@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+const mongoose = require("mongoose");
 
 const studentProgressSchema = new mongoose.Schema(
   {
@@ -6,23 +6,18 @@ const studentProgressSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
-      unique: true,
+    },
+
+    sessionId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Session",
+      required: true,
     },
 
     currentLayer: {
       type: String,
-      default: "Layer 1",
-    },
-
-    hintsUsed: {
-      type: Number,
-      default: 0,
-    },
-
-    status: {
-      type: String,
-      enum: ["active", "stuck", "completed"],
-      default: "active",
+      enum: ["Broad Context", "Structure", "Dynamics", "Evaluation"],
+      default: "Broad Context",
     },
 
     progress: {
@@ -31,8 +26,27 @@ const studentProgressSchema = new mongoose.Schema(
       min: 0,
       max: 100,
     },
+
+    status: {
+      type: String,
+      enum: ["active", "completed", "needs work"],
+      default: "active",
+    },
+
+    hintsUsed: {
+      type: Number,
+      default: 0,
+    },
+
+    group: {
+      type: String,
+      enum: ["Experimental Group", "Control Group"],
+      required: true,
+    },
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+  }
 );
 
-export default mongoose.model("StudentProgress", studentProgressSchema);
+module.exports = mongoose.model("StudentProgress", studentProgressSchema);

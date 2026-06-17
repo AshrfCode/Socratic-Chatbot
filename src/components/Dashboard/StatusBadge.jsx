@@ -1,16 +1,13 @@
 function StatusBadge({ status }) {
-  let style = "border-blue-400/30 bg-blue-400/10 text-blue-200";
-
-  if (status === "Completed") {
-    style = "border-emerald-400/30 bg-emerald-400/10 text-emerald-200";
-  }
-
-  if (status === "Needs Support") {
-    style = "border-amber-400/30 bg-amber-400/10 text-amber-200";
-  }
+  const style =
+    status === "Completed"
+      ? "bg-green-500/20 text-green-200"
+      : status === "Needs Support"
+      ? "bg-yellow-500/20 text-yellow-200"
+      : "bg-blue-500/20 text-blue-200";
 
   return (
-    <span className={`rounded-full border px-3 py-1 text-xs font-bold ${style}`}>
+    <span className={`rounded-full px-3 py-1 text-xs font-bold ${style}`}>
       {status}
     </span>
   );

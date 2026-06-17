@@ -11,35 +11,49 @@ const sessionSchema = new mongoose.Schema(
     chatId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Chat",
-      required: true,
+      default: null,
     },
 
     group: {
       type: String,
-      default: "Experimental Group",
+      enum: ["Experimental Group", "Control Group"],
+      required: true,
     },
 
     currentLayer: {
       type: String,
+      enum: ["Broad Context", "Structure", "Dynamics", "Evaluation"],
       default: "Broad Context",
     },
 
     hintsUsed: {
       type: Number,
-      default: 1,
+      default: 0,
     },
 
     unlockedGates: {
       type: [String],
-      default: ["Goal defined", "Stakeholders identified"],
+      default: [],
+    },
+
+    remainingTime: {
+      type: String,
+      default: "20:00",
     },
 
     status: {
       type: String,
-      default: "In Progress",
+      enum: ["active", "completed", "paused"],
+      default: "active",
     },
+    lastBotQuestions: {
+      type: [String],
+      default: [],
+},
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+  }
 );
 
 module.exports = mongoose.model("Session", sessionSchema);

@@ -1,37 +1,34 @@
+import { useSession } from "../../Context/SessionContext";
 import SessionInfo from "./SessionInfo";
 import ProgressConditions from "./ProgressConditions";
-import { useSession } from "../../Context/SessionContext";
+import InfoCard from "./InfoCard";
+
+/*
+  SidePanel consumes SessionContext.
+
+  It updates automatically when:
+  - hintsUsed changes
+  - currentLayer changes
+  - unlockedGates changes
+*/
 
 function SidePanel() {
-  const { sessionInfo } = useSession();
+  const { sessionInfo, loading, error } = useSession();
 
-  if (!sessionInfo) {
-    return <p className="text-slate-300">Loading session...</p>;
+  if (loading) {
+    return <InfoCard title="Session" value="Loading..." />;
+  }
+
+  if (error || !sessionInfo) {
+    return <InfoCard title="Error" value="Session data unavailable" />;
   }
 
   return (
-    <section>
-      <div className="mb-6">
-        <p className="text-sm font-semibold tracking-wide text-cyan-300">
-          Live Monitoring
-        </p>
-
-        <h2 className="mt-2 text-2xl font-extrabold text-white">
-          Session Control Panel
-        </h2>
-
-        <p className="mt-2 text-sm text-slate-300">
-          Real-time overview of the student&apos;s current learning session.
-        </p>
-      </div>
-
-      <div className="space-y-4">
-        <SessionInfo sessionInfo={sessionInfo} />
-
-           <ProgressConditions />
-      </div>
-    </section>
-  );
+  <aside className="space-y-4 text-white">
+    <SessionInfo sessionInfo={sessionInfo} />
+    <ProgressConditions sessionInfo={sessionInfo} />
+  </aside>
+);
 }
 
 export default SidePanel;

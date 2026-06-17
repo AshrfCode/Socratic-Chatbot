@@ -1,10 +1,42 @@
-function HintButton({ getHint }) {
+import { useState } from "react";
+import { getChatHint } from "../../services/chatService";
+
+function HintButton({ chatId, sessionId, studentId, onHint }) {
+  const [loading, setLoading] = useState(false);
+
+  async function handleGetHint() {
+    if (!chatId || !sessionId || !studentId) {
+      console.error("Missing data for hint:", {
+        chatId,
+        sessionId,
+        studentId,
+      });
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      const response = await getChatHint(chatId, {
+        sessionId,
+        studentId,
+      });
+
+      onHint(response.hintMessage, response.session);
+    } catch (error) {
+      console.error("Failed to get hint", error);
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
     <button
-      className="rounded-2xl border border-amber-400/40 bg-amber-400/10 px-5 py-3 font-bold text-amber-300 transition hover:bg-amber-400/20"
-      onClick={getHint}
+      onClick={handleGetHint}
+      disabled={loading}
+      className="mb-4 rounded-xl bg-purple-600 px-4 py-2 font-semibold text-white hover:bg-purple-700 disabled:opacity-50"
     >
-      💡 Get Hint
+      {loading ? "Loading hint..." : "Get Hint"}
     </button>
   );
 }

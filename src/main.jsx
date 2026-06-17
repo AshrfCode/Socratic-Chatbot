@@ -1,12 +1,20 @@
-import { StrictMode } from "react";
-import { createRoot } from "react-dom/client";
+import React from "react";
+import ReactDOM from "react-dom/client";
+import App from "./App";
 import { SessionProvider } from "./Context/SessionContext";
-import App from "./App.jsx";
+import "./index.css";
 
-createRoot(document.getElementById("root")).render(
-  <StrictMode>
+/*
+  main.jsx is the entry point of the React app.
+
+  We wrap App with SessionProvider so every component inside App
+  can access the same session data using useSession().
+*/
+
+ReactDOM.createRoot(document.getElementById("root")).render(
+  <React.StrictMode>
     <SessionProvider>
       <App />
     </SessionProvider>
-  </StrictMode>
+  </React.StrictMode>
 );

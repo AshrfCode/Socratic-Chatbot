@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const chatSchema = new mongoose.Schema(
+const controlGroupLogSchema = new mongoose.Schema(
   {
     studentId: {
       type: mongoose.Schema.Types.ObjectId,
@@ -14,9 +14,14 @@ const chatSchema = new mongoose.Schema(
       required: true,
     },
 
-    title: {
+    text: {
       type: String,
-      default: "SystemThinker AI Chat",
+      required: true,
+    },
+
+    timestamp: {
+      type: Date,
+      default: Date.now,
     },
   },
   {
@@ -24,4 +29,4 @@ const chatSchema = new mongoose.Schema(
   }
 );
 
-module.exports = mongoose.model("Chat", chatSchema);
+module.exports = mongoose.model("ControlGroupLog", controlGroupLogSchema);

@@ -1,43 +1,18 @@
 import InfoCard from "./InfoCard";
-import { useSession } from "../../Context/SessionContext";
 
-function SessionInfo() {
-  const { sessionInfo } = useSession();
-
-  if (!sessionInfo) return null;
-
+function SessionInfo({ sessionInfo }) {
   return (
-    <>
-      <InfoCard
-        icon="👤"
-        label="User"
-        value={sessionInfo.userName}
-      />
+    <div className="rounded-3xl border border-white/10 bg-white/10 p-5 shadow-xl">
+      <h2 className="mb-4 text-xl font-bold">Session Info</h2>
 
-      <InfoCard
-        icon="🧪"
-        label="Group"
-        value={sessionInfo.group}
-      />
-
-      <InfoCard
-        icon="🧠"
-        label="Current Layer"
-        value={sessionInfo.currentLayer}
-      />
-
-      <InfoCard
-        icon="⏳"
-        label="Remaining Time"
-        value={sessionInfo.remainingTime}
-      />
-
-      <InfoCard
-        icon="💡"
-        label="Hints Used"
-        value={sessionInfo.hintsUsed}
-      />
-    </>
+      <div className="grid gap-3">
+        <InfoCard title="Student" value={sessionInfo.userName} />
+        <InfoCard title="Group" value={sessionInfo.group} />
+        <InfoCard title="Current Layer" value={sessionInfo.currentLayer} />
+        <InfoCard title="Remaining Time" value={sessionInfo.remainingTime} />
+        <InfoCard title="Hints Used" value={sessionInfo.hintsUsed} />
+      </div>
+    </div>
   );
 }
 

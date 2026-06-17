@@ -1,8 +1,8 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useState } from "react";
 import {
-  getSessionInfo,
+  startSession,
+  getSessionById,
   increaseHintCounter,
-  moveToNextLayer,
 } from "../services/sessionService";
 
 const SessionContext = createContext();
@@ -10,63 +10,68 @@ const SessionContext = createContext();
 export function SessionProvider({ children }) {
   const [sessionInfo, setSessionInfo] = useState(null);
   const [dashboardVersion, setDashboardVersion] = useState(0);
-  const [progressError, setProgressError] = useState("");
 
-  useEffect(() => {
-    async function loadSession() {
-      try {
-        const data = await getSessionInfo();
-        setSessionInfo(data);
-      } catch (error) {
-        console.error("Failed to load session info", error);
-      }
-    }
+  async function startStudentSession(formData) {
+    const data = await startSession(formData);
+    setSessionInfo(data);
+    setDashboardVersion((prev) => prev + 1);
+    return data;
+  }
 
-    loadSession();
-  }, []);
+  async function refreshSession() {
+    if (!sessionInfo?.sessionId) return;
+
+    const data = await getSessionById(sessionInfo.sessionId);
+    setSessionInfo(data);
+    return data;
+  }
 
   async function increaseHintsUsed() {
-    try {
-      const updatedSession = await increaseHintCounter();
+    if (!sessionInfo?.sessionId) return;
 
-      setSessionInfo(updatedSession);
-      setDashboardVersion((prev) => prev + 1);
-    } catch (error) {
-      console.error("Failed to increase hints used", error);
-    }
+    const data = await increaseHintCounter(sessionInfo.sessionId);
+    setSessionInfo(data);
+    setDashboardVersion((prev) => prev + 1);
+    return data;
   }
 
-  async function goToNextLayer() {
-    try {
-      setProgressError("");
+  function updateAfterMessage(updatedSession) {
+    if (!updatedSession) return;
 
-      const updatedSession = await moveToNextLayer();
+    setSessionInfo((prev) => ({
+      ...prev,
+      ...updatedSession,
+    }));
 
-      setSessionInfo(updatedSession);
-      setDashboardVersion((prev) => prev + 1);
-    } catch (error) {
-      console.error("Failed to move to next layer", error);
-
-      setProgressError(
-        error.message || "You cannot move to the next layer yet."
-      );
-    }
+    setDashboardVersion((prev) => prev + 1);
   }
+
+  function refreshDashboard() {
+    setDashboardVersion((prev) => prev + 1);
+  }
+  function clearSession() {
+  setSessionInfo(null);
+  setDashboardVersion(0);
+}
 
   return (
     <SessionContext.Provider
       value={{
         sessionInfo,
-        increaseHintsUsed,
-        goToNextLayer,
         dashboardVersion,
-        progressError,
+        startStudentSession,
+        refreshSession,
+        increaseHintsUsed,
+        updateAfterMessage,
+        refreshDashboard,
+        clearSession,
       }}
     >
       {children}
     </SessionContext.Provider>
   );
 }
+
 
 export function useSession() {
   return useContext(SessionContext);

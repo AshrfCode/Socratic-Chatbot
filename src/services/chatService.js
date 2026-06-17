@@ -4,6 +4,10 @@ export function getChatMessages(chatId) {
   return apiGet(`/chat/${chatId}`);
 }
 
-export function addChatMessage(message) {
-  return apiPost("/chat", message);
+export function sendChatMessage(chatId, messageData) {
+  return apiPost(`/chat/${chatId}/message`, messageData);
+}
+
+export function getChatHint(chatId, hintData) {
+  return apiPost(`/chat/${chatId}/hint`, hintData);
 }

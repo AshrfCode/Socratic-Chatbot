@@ -1,5 +1,9 @@
 import { useEffect, useState } from "react";
-import { getChatMessages, addChatMessage } from "../../services/chatService";
+import {
+  getChatMessages,
+  sendChatMessage,
+} from "../../services/chatService";
+
 import ChatHeader from "./ChatHeader";
 import ChatMessages from "./ChatMessages";
 import ChatInput from "./ChatInput";
@@ -7,109 +11,93 @@ import HintButton from "./HintButton";
 import { useSession } from "../../Context/SessionContext";
 
 function ChatBox() {
+  const { sessionInfo, updateAfterMessage } = useSession();
+
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
 
-  const { sessionInfo, increaseHintsUsed } = useSession();
-
   const chatId = sessionInfo?.chatId;
+  const sessionId = sessionInfo?.sessionId;
+  const userId = sessionInfo?.userId;
 
   useEffect(() => {
-  if (!chatId) return;
+    async function loadMessages() {
+      if (!chatId) return;
 
-  async function loadMessages() {
-    try {
-      const data = await getChatMessages(chatId);
-      setMessages(data);
-    } catch (error) {
-      console.error("Failed to load messages", error);
+      try {
+        const data = await getChatMessages(chatId);
+        setMessages(data);
+      } catch (error) {
+        console.error("Failed to load messages", error);
+      }
     }
-  }
 
-  loadMessages();
-}, [chatId]);
-
-  function getCurrentTime() {
-    return new Date().toLocaleTimeString("en-US", {
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  }
+    loadMessages();
+  }, [chatId]);
 
   async function sendMessage() {
-  if (input.trim() === "" || !chatId) return;
-
-  const newUserMessage = {
-    chatId,
-    sender: "user",
-    text: input,
-  };
-
-  try {
-    const response = await addChatMessage(newUserMessage);
-
-    setMessages((prev) => [
-      ...prev,
-      response.userMessage,
-      response.botMessage,
-    ]);
-
-    setInput("");
-  } catch (error) {
-    console.error("Failed to send message", error);
-  }
-}
-
-  async function getHint() {
-    if (!chatId) return;
-
-    const hintMessage = {
-      chatId,
-      sender: "bot",
-      text: "Hint: Start by asking yourself: who is affected, what changes over time, and what feedback loop may appear?",
-    };
+    if (!input.trim()) return;
+    if (!chatId || !sessionId || !userId) {
+      console.error("Missing chatId, sessionId, or userId");
+      return;
+    }
 
     try {
-      const savedHintMessage = await addChatMessage(hintMessage);
-      await increaseHintsUsed();
+      const response = await sendChatMessage(chatId, {
+        sessionId,
+        studentId: userId,
+        text: input,
+      });
 
-      setMessages((prev) => [...prev, savedHintMessage]);
+      setMessages((prev) => {
+        const updated = [...prev, response.userMessage];
+
+        if (response.botMessage) {
+          updated.push(response.botMessage);
+        }
+
+        return updated;
+      });
+
+      updateAfterMessage(response.session);
+      setInput("");
     } catch (error) {
-      console.error("Failed to get hint", error);
+      console.error("Failed to send message", error);
     }
   }
 
   if (!sessionInfo) {
-    return (
-      <section className="rounded-3xl border border-blue-400/30 bg-slate-950/70 p-6 text-slate-300">
-        Loading chat...
-      </section>
-    );
+    return null;
   }
 
   return (
-    <section className="relative overflow-hidden rounded-3xl border border-blue-400/30 bg-slate-950/70 shadow-2xl shadow-blue-950/50">
-      <div className="absolute -top-24 -right-24 h-56 w-56 rounded-full bg-blue-500/20 blur-3xl"></div>
-      <div className="absolute -bottom-24 -left-24 h-56 w-56 rounded-full bg-purple-500/20 blur-3xl"></div>
-
+    <section className="rounded-3xl bg-white/10 p-6 text-white shadow-xl">
       <ChatHeader />
+
       <ChatMessages messages={messages} />
 
-      <div className="relative z-10 border-t border-white/10 bg-slate-950/50 p-5">
-        <ChatInput
-          input={input}
-          setInput={setInput}
-          sendMessage={sendMessage}
+      {sessionInfo.group === "Control Group" ? (
+        <p className="mt-4 rounded-xl bg-yellow-500/20 p-3 text-yellow-200">
+          You are in the Control Group. Your text will be saved, but the AI
+          chatbot is disabled.
+        </p>
+      ) : (
+        <HintButton
+          chatId={chatId}
+          sessionId={sessionId}
+          studentId={userId}
+          onHint={(hintMessage, updatedSession) => {
+            setMessages((prev) => [...prev, hintMessage]);
+            updateAfterMessage(updatedSession);
+          }}
         />
+      )}
 
-        <div className="mt-4 flex items-center justify-between gap-3">
-          <HintButton getHint={getHint} />
-
-          <p className="text-sm text-slate-400">
-            ✨ The bot guides you with questions, not direct answers.
-          </p>
-        </div>
-      </div>
+      <ChatInput
+        input={input}
+        setInput={setInput}
+        sendMessage={sendMessage}
+      />
     </section>
   );
 }

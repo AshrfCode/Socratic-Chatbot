@@ -1,10 +1,10 @@
 const mongoose = require("mongoose");
 
-const messageSchema = new mongoose.Schema(
+const gateEventSchema = new mongoose.Schema(
   {
-    chatId: {
+    studentId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Chat",
+      ref: "User",
       required: true,
     },
 
@@ -14,30 +14,22 @@ const messageSchema = new mongoose.Schema(
       required: true,
     },
 
-    studentId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
-    },
-
-    sender: {
-      type: String,
-      enum: ["user", "bot", "system"],
-      required: true,
-    },
-
-    text: {
-      type: String,
-      required: true,
-    },
-
     layer: {
       type: String,
-      enum: ["Broad Context", "Structure", "Dynamics", "Evaluation"],
       required: true,
     },
 
-    timestamp: {
+    gateName: {
+      type: String,
+      required: true,
+    },
+
+    trigger: {
+      type: String,
+      required: true,
+    },
+
+    unlockedAt: {
       type: Date,
       default: Date.now,
     },
@@ -47,4 +39,4 @@ const messageSchema = new mongoose.Schema(
   }
 );
 
-module.exports = mongoose.model("Message", messageSchema);
+module.exports = mongoose.model("GateEvent", gateEventSchema);

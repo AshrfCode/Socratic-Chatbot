@@ -1,13 +1,13 @@
 import { apiGet, apiPost } from "./api";
 
-export function getSessionInfo() {
-  return apiGet("/session");
+export function startSession(studentData) {
+  return apiPost("/session/start", studentData);
 }
 
-export function increaseHintCounter() {
-  return apiPost("/session/hint", {});
+export function getSessionById(sessionId) {
+  return apiGet(`/session/${sessionId}`);
 }
 
-export function moveToNextLayer() {
-  return apiPost("/session/next-layer", {});
+export function increaseHintCounter(sessionId) {
+  return apiPost("/session/increase-hint", { sessionId });
 }

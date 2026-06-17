@@ -29,43 +29,69 @@ function ResearcherLogin({ onLogin, onBack }) {
   }
 
   return (
-    <section className="mx-auto mt-10 max-w-md rounded-3xl bg-white/10 p-6 text-white shadow-xl">
-      <h2 className="mb-4 text-2xl font-bold">Researcher Login</h2>
+    // Matches the exact background gradient and top-weighted centering
+    <div className="flex min-h-screen w-full flex-col items-center justify-start bg-gradient-to-br from-slate-950 via-purple-900/20 to-slate-950 px-4 pt-[12vh]">
+      
+      {/* Matches the glassmorphism card style */}
+      <section className="w-full max-w-md rounded-2xl border border-white/5 bg-[#1e2333]/80 p-8 text-white shadow-2xl backdrop-blur-xl">
+        <div className="mb-8 text-center">
+          <h2 className="text-3xl font-extrabold tracking-tight text-white">
+            Researcher Login
+          </h2>
+          <p className="mt-2 text-sm text-gray-400">
+            Enter credentials to access the monitor
+          </p>
+        </div>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <input
-          name="username"
-          value={form.username}
-          onChange={handleChange}
-          placeholder="Researcher username"
-          className="w-full rounded-xl bg-slate-800 p-3 text-white"
-          required
-        />
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <div>
+            <input
+              name="username"
+              value={form.username}
+              onChange={handleChange}
+              placeholder="Researcher username"
+              className="w-full rounded-lg border border-transparent bg-[#2a2f42]/80 p-3.5 text-white placeholder-gray-400 transition-all focus:border-purple-500 focus:bg-[#2a2f42] focus:outline-none focus:ring-1 focus:ring-purple-500"
+              required
+            />
+          </div>
 
-        <input
-          name="accessCode"
-          value={form.accessCode}
-          onChange={handleChange}
-          placeholder="Access code"
-          className="w-full rounded-xl bg-slate-800 p-3 text-white"
-          required
-        />
+          <div>
+            <input
+              type="password" // Assuming this should hide the text!
+              name="accessCode"
+              value={form.accessCode}
+              onChange={handleChange}
+              placeholder="Access code"
+              className="w-full rounded-lg border border-transparent bg-[#2a2f42]/80 p-3.5 text-white placeholder-gray-400 transition-all focus:border-purple-500 focus:bg-[#2a2f42] focus:outline-none focus:ring-1 focus:ring-purple-500"
+              required
+            />
+          </div>
 
-        {error && <p className="text-red-300">{error}</p>}
+          {error && (
+            <p className="text-center text-sm font-medium text-red-400">
+              {error}
+            </p>
+          )}
 
-        <button className="w-full rounded-xl bg-purple-600 py-3 font-bold">
-          Enter Monitor
-        </button>
+          <div className="pt-4">
+            <button
+              type="submit"
+              className="mb-3 w-full rounded-lg bg-gradient-to-r from-purple-600 to-indigo-600 py-3.5 font-bold text-white shadow-lg shadow-purple-500/20 transition-all hover:scale-[1.02] hover:shadow-purple-500/40 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-[#1e2333]"
+            >
+              Enter Monitor
+            </button>
 
-        <button
-          type="button"
-          onClick={onBack}
-          className="w-full rounded-xl bg-slate-700 py-3 font-bold"
-        >
-          Back
-        </button>
-      </form>
-    </section>
+            <button
+              type="button"
+              onClick={onBack}
+              className="w-full rounded-lg bg-white/5 py-3.5 font-bold text-gray-300 transition-all hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 focus:ring-offset-[#1e2333]"
+            >
+              Back
+            </button>
+          </div>
+        </form>
+      </section>
+    </div>
   );
 }
 

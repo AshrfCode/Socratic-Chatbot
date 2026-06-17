@@ -7,40 +7,54 @@ const preTaskQuestionnaireSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
-
-    previousExperience: {
+    consent: {
+      type: String,
+      required: true,
+    },
+    gender: {
+      type: String,
+      required: true,
+    },
+    age: {
+      type: String,
+      required: true,
+    },
+    education: {
       type: String,
       default: "",
     },
-
-    chatbotComfort: {
-      type: Number,
-      min: 1,
-      max: 5,
+    workedInSE: {
+      type: String,
       required: true,
     },
-
-    topicFamiliarity: {
-      type: Number,
-      min: 1,
-      max: 5,
-      required: true,
-    },
-
-    yearsExperience: {
-      type: Number,
-      default: 0,
-    },
-
-    demographics: {
+    roleAndExperience: {
       type: String,
       default: "",
     },
-
-    selfRatedSystemsThinking: {
-      type: Number,
-      min: 1,
-      max: 5,
+    studiedSE: {
+      type: String,
+      required: true,
+    },
+    usedSocraticBot: {
+      type: String,
+      required: true,
+    },
+    socraticBotExperience: {
+      type: String,
+      default: "",
+    },
+    // This Map catches all 27 Likert scale answers dynamically
+    likertAnswers: {
+      type: Map,
+      of: String,
+      required: true,
+    },
+    openQ1: {
+      type: String,
+      required: true,
+    },
+    openQ2: {
+      type: String,
       required: true,
     },
   },

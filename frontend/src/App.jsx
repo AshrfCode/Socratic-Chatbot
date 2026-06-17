@@ -25,50 +25,53 @@ function App() {
     clearSession();
   }
 
+  // Check if we are showing a full-screen background view (like login)
+  const isAuthView = !sessionInfo && !researcher;
+
   return (
-    <div className="min-h-screen bg-slate-950 p-6 text-white">
-      <Header />
+    <div className="flex min-h-screen flex-col bg-slate-950 text-white">
+      {/* Pass the logout state and function to the Header */}
+      <Header 
+        showLogout={!!(sessionInfo || researcher)} 
+        onLogout={handleLogout} 
+      />
 
-      {(sessionInfo || researcher) && (
-        <button
-          onClick={handleLogout}
-          className="mb-4 rounded-xl bg-red-500/20 px-4 py-2 text-red-200 hover:bg-red-500/30"
-        >
-          Logout
-        </button>
-      )}
+      <div className={`flex-1 ${isAuthView ? "" : "mx-auto w-full max-w-7xl p-4 md:p-6"}`}>
+        
+        {/* The floating logout button has been entirely removed from here! */}
 
-      {researcher ? (
-        <>
-          <DashboardPreview />
-          <ResearchAnalytics />
-        </>
-      ) : showResearcherLogin ? (
-        <ResearcherLogin
-          onLogin={setResearcher}
-          onBack={() => setShowResearcherLogin(false)}
-        />
-      ) : !sessionInfo ? (
-        <StartSessionForm
-          onResearcherClick={() => setShowResearcherLogin(true)}
-        />
-      ) : !preTaskDone ? (
-        <PreTaskSurvey onDone={() => setPreTaskDone(true)} />
-      ) : (
-        <>
-          <ProgressBar />
+        {researcher ? (
+          <div className="space-y-6">
+            <DashboardPreview />
+            <ResearchAnalytics />
+          </div>
+        ) : showResearcherLogin ? (
+          <ResearcherLogin
+            onLogin={setResearcher}
+            onBack={() => setShowResearcherLogin(false)}
+          />
+        ) : !sessionInfo ? (
+          <StartSessionForm
+            onResearcherClick={() => setShowResearcherLogin(true)}
+          />
+        ) : !preTaskDone ? (
+          <PreTaskSurvey onDone={() => setPreTaskDone(true)} />
+        ) : (
+          <div className="flex flex-col space-y-6">
+            <ProgressBar />
 
-          <main className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-            <div className="lg:col-span-2">
-              <ChatBox />
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+              <div className="lg:col-span-2">
+                <ChatBox />
+              </div>
+
+              <SidePanel />
             </div>
 
-            <SidePanel />
-          </main>
-
-          {sessionInfo.status === "completed" && <PostTaskSurvey />}
-        </>
-      )}
+            {sessionInfo.status === "completed" && <PostTaskSurvey />}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

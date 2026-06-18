@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom"; // <-- Import the Link component!
 
 function Header({ showLogout, onLogout }) {
   const [isDark, setIsDark] = useState(true);
@@ -14,17 +15,25 @@ function Header({ showLogout, onLogout }) {
   return (
     <header className="sticky left-0 top-0 z-50 w-full border-b border-white/5 bg-[#1e2333]/80 px-6 py-5 shadow-lg backdrop-blur-xl transition-all">
       <div className="mx-auto flex max-w-7xl flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        
+        {/* Left Side: Clickable Logo & Subtitle */}
         <div>
-          <h1 className="text-3xl font-extrabold tracking-tight text-white">
-            SystemThinker AI
-          </h1>
+          {/* Wrap the title in the Router Link */}
+          <Link 
+            to="/" 
+            className="group inline-block focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-[#1e2333] rounded-lg"
+          >
+            <h1 className="text-3xl font-extrabold tracking-tight text-white transition-colors group-hover:text-purple-400">
+              SystemThinker AI
+            </h1>
+          </Link>
 
           <p className="mt-1 text-sm font-medium text-gray-400">
             AI-based Socratic chatbot for Systems Thinking research
           </p>
         </div>
 
-        {/* Grouped the badge, theme toggle, and the logout button together */}
+        {/* Right Side: Badge, Theme Toggle, and Logout */}
         <div className="flex items-center gap-4">
           <span className="hidden rounded-full bg-gradient-to-r from-purple-600 to-indigo-600 px-5 py-2 text-sm font-bold text-white shadow-lg shadow-purple-500/20 sm:inline-block">
             Advanced Web Development Project

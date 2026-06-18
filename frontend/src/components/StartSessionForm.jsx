@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useSession } from "../Context/SessionContext";
 
-function StartSessionForm({ onResearcherClick }) {
+function StartSessionForm({ onBack }) {
   const { startStudentSession } = useSession();
 
   const [formData, setFormData] = useState({
@@ -32,7 +32,7 @@ function StartSessionForm({ onResearcherClick }) {
   }
 
   return (
-    <div className="flex min-h-screen w-full flex-col items-center justify-start bg-gradient-to-br from-slate-950 via-purple-900/20 to-slate-950 px-4 pt-[12vh]">
+    <div className="flex w-full flex-col items-center justify-center px-4 py-12 md:pt-[10vh]">
       
       <section className="w-full max-w-md rounded-2xl border border-white/5 bg-[#1e2333]/80 p-8 text-white shadow-2xl backdrop-blur-xl">
         <div className="mb-8 text-center">
@@ -92,17 +92,13 @@ function StartSessionForm({ onResearcherClick }) {
             </button>
           </div>
 
-          {/* New clearly separated researcher section */}
-          <div className="mt-4 border-t border-white/10 pt-6 text-center">
-            <p className="mb-4 text-sm font-medium text-gray-400">
-              Are you a researcher?
-            </p>
-            <button
+          <div className="mt-4 text-center">
+            <button 
               type="button"
-              onClick={onResearcherClick}
-              className="w-full rounded-lg bg-white/5 py-3.5 font-bold text-gray-300 transition-all hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 focus:ring-offset-[#1e2333]"
+              onClick={onBack} 
+              className="text-sm font-medium text-slate-400 hover:text-purple-400"
             >
-              Monitor Login
+              ← Back to Home
             </button>
           </div>
 

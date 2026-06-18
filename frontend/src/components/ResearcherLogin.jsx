@@ -30,7 +30,7 @@ function ResearcherLogin({ onLogin, onBack }) {
 
   return (
     // Matches the exact background gradient and top-weighted centering
-    <div className="flex min-h-screen w-full flex-col items-center justify-start bg-gradient-to-br from-slate-950 via-purple-900/20 to-slate-950 px-4 pt-[12vh]">
+    <div className="flex w-full flex-col items-center justify-center px-4 py-12 md:pt-[10vh]">
       
       {/* Matches the glassmorphism card style */}
       <section className="w-full max-w-md rounded-2xl border border-white/5 bg-[#1e2333]/80 p-8 text-white shadow-2xl backdrop-blur-xl">

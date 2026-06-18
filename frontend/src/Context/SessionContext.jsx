@@ -49,10 +49,19 @@ export function SessionProvider({ children }) {
   function refreshDashboard() {
     setDashboardVersion((prev) => prev + 1);
   }
+
+  // --- NEW FUNCTION: Updates the status locally to trigger App.jsx routing ---
+  function updateSessionStatus(newStatus) {
+    setSessionInfo((prev) => {
+      if (!prev) return prev;
+      return { ...prev, status: newStatus };
+    });
+  }
+
   function clearSession() {
-  setSessionInfo(null);
-  setDashboardVersion(0);
-}
+    setSessionInfo(null);
+    setDashboardVersion(0);
+  }
 
   return (
     <SessionContext.Provider
@@ -64,6 +73,7 @@ export function SessionProvider({ children }) {
         increaseHintsUsed,
         updateAfterMessage,
         refreshDashboard,
+        updateSessionStatus, // Don't forget to expose it here!
         clearSession,
       }}
     >
@@ -71,7 +81,6 @@ export function SessionProvider({ children }) {
     </SessionContext.Provider>
   );
 }
-
 
 export function useSession() {
   return useContext(SessionContext);

@@ -25,12 +25,10 @@ function App() {
     clearSession();
   }
 
-  // Check if we are showing a full-screen background view (like login)
   const isAuthView = !sessionInfo && !researcher;
 
   return (
     <div className="flex min-h-screen flex-col bg-slate-950 text-white">
-      {/* Pass the logout state and function to the Header */}
       <Header 
         showLogout={!!(sessionInfo || researcher)} 
         onLogout={handleLogout} 
@@ -38,8 +36,6 @@ function App() {
 
       <div className={`flex-1 ${isAuthView ? "" : "mx-auto w-full max-w-7xl p-4 md:p-6"}`}>
         
-        {/* The floating logout button has been entirely removed from here! */}
-
         {researcher ? (
           <div className="space-y-6">
             <DashboardPreview />
@@ -56,6 +52,11 @@ function App() {
           />
         ) : !preTaskDone ? (
           <PreTaskSurvey onDone={() => setPreTaskDone(true)} />
+          
+        ) : sessionInfo.status === "completed" ? (
+          
+          <PostTaskSurvey onDone={handleLogout} />
+          
         ) : (
           <div className="flex flex-col space-y-6">
             <ProgressBar />
@@ -67,8 +68,6 @@ function App() {
 
               <SidePanel />
             </div>
-
-            {sessionInfo.status === "completed" && <PostTaskSurvey />}
           </div>
         )}
       </div>

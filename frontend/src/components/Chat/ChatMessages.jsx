@@ -1,7 +1,17 @@
+import { useLayoutEffect, useRef } from "react";
 import ChatMessage from "./ChatMessage";
 
-function ChatMessages({ messages }) {
-  if (messages.length === 0) {
+function ChatMessages({ messages, isTyping }) {
+  const messagesEndRef = useRef(null);
+
+  useLayoutEffect(() => {
+    // Scroll down when a new message arrives OR when the typing indicator appears
+    requestAnimationFrame(() => {
+      messagesEndRef.current?.scrollIntoView({ behavior: "auto" });
+    });
+  }, [messages, isTyping]); 
+
+  if (messages.length === 0 && !isTyping) {
     return (
       <div className="flex flex-1 items-center justify-center bg-[#0f121b]/40 p-5">
         <div className="text-center">
@@ -19,11 +29,24 @@ function ChatMessages({ messages }) {
   }
 
   return (
-    // Custom scrollbar classes added implicitly via Tailwind (needs base CSS or just looks clean natively)
-    <div className="flex-1 space-y-6 overflow-y-auto bg-[#0f121b]/40 p-5 scroll-smooth">
+    <div className="flex-1 space-y-6 overflow-y-auto bg-[#0f121b]/40 p-5">
       {messages.map((message) => (
         <ChatMessage key={message._id} message={message} />
       ))}
+      
+      {/* NEW: The Bot Typing Animation Bubble */}
+      {isTyping && (
+        <div className="flex w-full justify-start animate-in fade-in slide-in-from-bottom-2 duration-300" dir="ltr">
+          <div className="flex w-fit items-center gap-1.5 rounded-2xl rounded-tl-none border border-white/5 bg-[#2a2f42] px-5 py-4 shadow-md">
+            <span className="h-2 w-2 animate-bounce rounded-full bg-purple-400"></span>
+            <span className="h-2 w-2 animate-bounce rounded-full bg-purple-400" style={{ animationDelay: '0.15s' }}></span>
+            <span className="h-2 w-2 animate-bounce rounded-full bg-purple-400" style={{ animationDelay: '0.3s' }}></span>
+          </div>
+        </div>
+      )}
+
+      {/* The invisible anchor at the bottom of the list! */}
+      <div ref={messagesEndRef} />
     </div>
   );
 }

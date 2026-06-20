@@ -27,26 +27,6 @@ function App() {
     navigate("/"); // Instantly kicks them back to the landing page URL
   }
 
-  // --- SUB-COMPONENT: The Student Flow ---
-  // This handles the Pre-Task -> Chat -> Post-Task progression
-  const StudentSessionFlow = () => {
-    if (!sessionInfo) return <Navigate to="/login" />;
-    if (!preTaskDone) return <PreTaskSurvey onDone={() => setPreTaskDone(true)} />;
-    if (sessionInfo.status === "completed") return <PostTaskSurvey onDone={handleLogout} />;
-
-    return (
-      <div className="flex flex-col space-y-6">
-        <ProgressBar />
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-          <div className="lg:col-span-2">
-            <ChatBox />
-          </div>
-          <SidePanel />
-        </div>
-      </div>
-    );
-  };
-
   return (
     <div className="flex min-h-screen flex-col bg-slate-50 text-slate-900 transition-colors duration-500 dark:bg-slate-950 dark:bg-gradient-to-br dark:from-slate-950 dark:via-purple-900/10 dark:to-slate-950 dark:text-white">
       
@@ -56,7 +36,6 @@ function App() {
       />
 
       <div className="mx-auto flex w-full max-w-7xl flex-1 flex-col p-4 md:p-6">
-        {/* --- THE ROUTER --- */}
         <Routes>
           
           {/* 1. Landing Page */}
@@ -109,10 +88,31 @@ function App() {
             } 
           />
 
-          {/* 5. The Active Chat Session */}
-          <Route path="/session" element={<StudentSessionFlow />} />
+          {/* 5. The Active Chat Session (FIXED) */}
+          <Route 
+            path="/session" 
+            element={
+              !sessionInfo ? (
+                <Navigate to="/login" />
+              ) : !preTaskDone ? (
+                <PreTaskSurvey onDone={() => setPreTaskDone(true)} />
+              ) : sessionInfo.status === "completed" ? (
+                <PostTaskSurvey onDone={handleLogout} />
+              ) : (
+                <div className="flex flex-col space-y-6">
+                  <ProgressBar />
+                  <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+                    <div className="lg:col-span-2">
+                      <ChatBox />
+                    </div>
+                    <SidePanel />
+                  </div>
+                </div>
+              )
+            } 
+          />
 
-          {/* 6. Catch-All (If they type a bad URL, send them home) */}
+          {/* 6. Catch-All */}
           <Route path="*" element={<Navigate to="/" />} />
 
         </Routes>

@@ -1,8 +1,6 @@
 const StudentProgress = require("../models/StudentProgress");
 const GateEvent = require("../models/GateEvent");
 const Message = require("../models/Message");
-
-// Imports are correct here!
 const Session = require("../models/Session");
 const PreTask = require("../models/PreTaskQuestionnaire");   
 const PostTask = require("../models/PostTaskQuestionnaire"); 
@@ -21,10 +19,14 @@ async function getDashboardData(req, res) {
           
           const session = await Session.findById(item.sessionId).lean();
           
-          // FIX IS HERE: Use the imported models (PreTask/PostTask) to search, 
-          // and save them to lowercase variables (preTask/postTask)
           const preTask = await PreTask.findOne({ studentId: item.studentId._id }).lean();
           const postTask = await PostTask.findOne({ studentId: item.studentId._id }).lean();
+
+          // NEW: Fetch only THIS student's gate triggers for this session
+          const gateEvents = await GateEvent.find({ 
+            studentId: item.studentId._id,
+            sessionId: item.sessionId
+          }).sort({ createdAt: 1 }).lean(); // Sorted oldest to newest to show progression
 
           return {
             progressId: item._id,
@@ -37,12 +39,12 @@ async function getDashboardData(req, res) {
             hintsUsed: item.hintsUsed,
             updatedAt: item.updatedAt,
             
-            // Now these variables exist and will map perfectly!
             status: session ? session.status : "unknown",
             chatId: session ? session.chatId : null,
             remainingTime: session ? session.remainingTime : "00:00",
             preTask: preTask || null,
             postTask: postTask || null,
+            gateEvents: gateEvents || [], // <--- Attached directly to the student!
           };
         })
     );

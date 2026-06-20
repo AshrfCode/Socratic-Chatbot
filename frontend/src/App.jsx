@@ -81,8 +81,8 @@ function App() {
             element={
               researcher ? (
                 <div className="space-y-6">
-                  <DashboardPreview />
                   <ResearchAnalytics />
+                  <DashboardPreview />
                 </div>
               ) : <Navigate to="/admin" /> 
             } 

@@ -11,30 +11,58 @@ function ChatMessages({ messages, isTyping }) {
     });
   }, [messages, isTyping]); 
 
-  if (messages.length === 0 && !isTyping) {
-    return (
-      <div className="flex flex-1 items-center justify-center bg-[#0f121b]/40 p-5">
-        <div className="text-center">
-          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-purple-500/20 text-purple-400">
-            <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
-            </svg>
-          </div>
-          <p className="text-sm font-medium text-slate-400">
-            No messages yet. Start by describing the system goal.
-          </p>
-        </div>
-      </div>
-    );
-  }
+  // Bulletproof fallback to absolutely guarantee the app never crashes if messages are delayed
+  const safeMessages = messages || [];
 
   return (
     <div className="flex-1 space-y-6 overflow-y-auto bg-[#0f121b]/40 p-5">
-      {messages.map((message) => (
+      
+      {/* 1. THE PERMANENT STORY CARD */}
+      <div className="mx-auto mb-8 mt-2 flex w-full max-w-[95%] flex-col rounded-2xl border border-indigo-500/20 bg-indigo-950/30 p-6 shadow-xl backdrop-blur-md" dir="rtl">
+        <h3 className="mb-4 text-2xl font-extrabold tracking-tight text-indigo-400">סיפור הרקע</h3>
+        <p className="mb-2 text-[15px] leading-relaxed text-slate-300">
+          גלידרייה שכונתית קטנה ואהובה עם מתכון סודי שעובר במשך שלושה דורות.
+        </p>
+        <p className="mb-6 text-[15px] leading-relaxed text-slate-300">
+          אנשים מגיעים ממרחקים במיוחד כדי לטעום את הגלידה, מה שיוצר תורים ענקיים בשעות העומס.
+        </p>
+        
+        <div className="mb-6 rounded-xl border border-indigo-500/30 bg-indigo-500/10 p-4 shadow-inner">
+          <p className="text-lg font-bold leading-snug text-indigo-300">
+            המשימה: פתרון בעיית התורים תוך שמירה על איכות, מסורת ושביעות הרצון של כולם.
+          </p>
+        </div>
+
+        <h4 className="mb-3 text-lg font-bold text-indigo-400">עקרונות חשיבה מערכתית:</h4>
+        <ul className="list-inside list-disc space-y-2 text-[15px] text-slate-300">
+          <li>הבנת המערכת כשלם וראיית התמונה הגדולה</li>
+          <li>הגדרת גבולות המערכת (גורמים לא הנדסיים)</li>
+          <li>הבנת ההשלכות של שינויים מוצעים</li>
+        </ul>
+      </div>
+
+      {/* 2. INITIAL AI GREETING (Only shows if the chat is completely empty) */}
+      {safeMessages.length === 0 && !isTyping && (
+        <div className="flex w-full justify-start animate-in fade-in duration-700 mb-6" dir="ltr">
+          <div className="flex w-fit max-w-[80%] items-end gap-2">
+            <div className="rounded-2xl rounded-tl-none border border-white/5 bg-[#2a2f42] px-6 py-4 shadow-md">
+              <p className="mb-2 text-[10px] font-bold uppercase tracking-wider text-purple-400">
+                SystemThinker AI
+              </p>
+              <p className="text-[15px] leading-relaxed text-slate-200" dir="rtl">
+                שלום! מה המאפיינים הייחודיים של הגלידרייה שחשוב לשמור עליהם במהלך חיפוש פתרונות לבעיית התורים?
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 3. THE REAL CHAT HISTORY */}
+      {safeMessages.map((message) => (
         <ChatMessage key={message._id} message={message} />
       ))}
       
-      {/* NEW: The Bot Typing Animation Bubble */}
+      {/* 4. THE TYPING INDICATOR */}
       {isTyping && (
         <div className="flex w-full justify-start animate-in fade-in slide-in-from-bottom-2 duration-300" dir="ltr">
           <div className="flex w-fit items-center gap-1.5 rounded-2xl rounded-tl-none border border-white/5 bg-[#2a2f42] px-5 py-4 shadow-md">

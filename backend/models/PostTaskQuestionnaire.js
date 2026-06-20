@@ -8,9 +8,19 @@ const postTaskQuestionnaireSchema = new mongoose.Schema(
       required: true,
     },
 
+    // NEW: Stores the 27 systems thinking questions.
+    // Using a Map allows dynamic keys (like "0", "1", "2") with String values
+    likertAnswers: {
+      type: Map,
+      of: String, 
+      required: true,
+    },
+
+    // FIX: Removed 'required: true' because the Control Group 
+    // does not answer this question and sends 'null'.
     didBotGiveAnswers: {
       type: Boolean,
-      required: true,
+      default: null,
     },
 
     didQuestionsHelpThinking: {

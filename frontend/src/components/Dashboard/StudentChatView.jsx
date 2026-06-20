@@ -23,6 +23,13 @@ function StudentChatView({ student, onBack }) {
     fetchTranscript();
   }, [student.chatId]);
 
+  // NEW: Helper function to turn MongoDB timestamps into readable 24-hour time (e.g., 14:35:10)
+  const formatTime = (dateString) => {
+    if (!dateString) return "";
+    const date = new Date(dateString);
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+  };
+
   return (
     <section className="mt-6 flex h-[800px] flex-col overflow-hidden rounded-2xl border border-white/5 bg-[#1e2333]/80 shadow-2xl backdrop-blur-xl animate-in fade-in duration-300">
       
@@ -70,15 +77,19 @@ function StudentChatView({ student, onBack }) {
 
             return (
               <div key={idx} className={`flex w-full ${isUser ? "justify-end" : "justify-start"}`}>
-                <div className={`max-w-[70%] px-6 py-4 shadow-md ${
+                <div className={`min-w-[250px] max-w-[70%] px-6 py-4 shadow-md ${
                   isUser 
                     ? "rounded-2xl rounded-br-sm bg-gradient-to-br from-indigo-600 to-purple-600 text-white" 
                     : "rounded-2xl rounded-bl-sm border border-white/5 bg-[#2a2f42] text-slate-200"
                 }`}>
-                  <p className={`mb-2 text-xs font-bold uppercase tracking-wider ${isUser ? "text-indigo-200" : "text-purple-400"}`}>
-                    {isUser ? "Student" : "SystemThinker AI"}
-                  </p>
-                  <p className="text-[15px] leading-relaxed">{msg.text}</p>
+                  {/* NEW: Added a flex container here to push the name left and the time right */}
+                  <div className={`mb-2 flex items-center justify-between text-xs font-bold uppercase tracking-wider ${isUser ? "text-indigo-200" : "text-purple-400"}`}>
+                    <span>{isUser ? "Student" : "SystemThinker AI"}</span>
+                    <span className="ml-4 font-normal tracking-normal opacity-70">
+                      {formatTime(msg.createdAt)}
+                    </span>
+                  </div>
+                  <p className="text-[15px] leading-relaxed" dir="auto">{msg.text}</p>
                 </div>
               </div>
             );

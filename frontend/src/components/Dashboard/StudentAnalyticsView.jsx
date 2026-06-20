@@ -1,5 +1,39 @@
+import React from 'react';
+
 function StudentAnalyticsView({ student, onBack }) {
   if (!student) return null;
+
+  // We place the array directly inside the file so it is mathematically impossible 
+  // for the lookup to lose scope of the questions!
+  const QUESTIONS_ARRAY = [
+    "כאשר מנתחים תהליך כלשהו בארגון, חשוב להתמקד בתהליך עצמו ולא בדרך בה התהליך משתלב עם תהליכים רחבים יותר",
+    "כאשר בוחנים תהליך שיפור יש לבדוק כיצד השיפורים ישפיעו על תהליכים אחרים נוספים",
+    "כאשר עובדים בצוות אחד הדברים החשובים זה כיצד כל חבר צוות יבצע את תפקידו על הצד הטוב ביותר, בלי קשר לעבודת שותפיו לצוות",
+    "בטיפול בנושא מסויים יש להבין עד הפרט הקטן ביותר הקשור בנושא",
+    "כאשר עוסקים בתחום מסויים, יש להתמקד בתחום עצמו. אין צורך לעסוק בהבטים כלכליים/ ניהוליים או כל הבט אחר שיושפע מעבודה זו",
+    "כאשר עוסקים בתהליך מסויים יש צורך להבין גם את תפקידם של אנשי המקצוע האחרים המעורבים בתהליך",
+    "כאשר מציגים תהליך בארגון עדיף לא לעסוק בקשרים ההדדיים וההשפעות ההדדיות בין מרכיבי התהליך לתהליכים אחרים בארגון",
+    "כאשר נתקלים בבעיה בעבודה כדאי תחילה לפרק אותה למרכיבים ולפתור אותה בשלבים",
+    "רק מנהלי פרויקטים בעולם העסקי חייבים לקחת קורסים בניהול פרויקטים, על שאר המהנדסים לעסוק בתחום התמחותם",
+    "עדיף שאת הקשר עם הלקוחות יעשו אלו שזה תפקידם",
+    "מנהל פרויקט צריך להיות שותף , לבחון את החלופות השונות לפיתרון ולהמליץ על הפיתרון הנבחר. הוא אינו צריך להתרכז במימוש פיתרון שהומלץ ע\"י האירגון",
+    "בבחירת מנהל עדיף לתת דגש ליכולתו המקצועית ופחות ליכולת הניהולית שלו",
+    "יש להתפשר ולוותר על הפיתרון הטוב ביותר מבחינת הביצועים למשל משיקולי עלות- תועלת",
+    "כאשר נתקלים בבעיה, תחילה להבין את ההקשר שבו היא נוצרה",
+    "על מנת להצליח בביצוע תפקיד, חשוב לרכוש ידע גם בנושאים שאינם מתחום ההתמחות העיקרית",
+    "על כל אחד להתמחות בתחומו, ריבוי תחומים עלול להוביל לידע שטחי (לדעת מעט על הרבה נושאים)",
+    "עדיף שהעוסקים בתחומים האסטרטגיים של האירגון יהיו אלו שזהו תפקידם. אין צורך במעורבות גורמים נוספים באירגון",
+    "שינויים קטנים עשויים ליצור תוצאות משמעותיות",
+    "כשעובד הוא חלק מפרוייקט הוא מעוניין לדעת איך הוא יראה מספר שנים לאחר השלמתו",
+    "בפתרון לבעיה צריך לקחת בחשבון גם שיקולים \"פוליטיים\" וארגוניים",
+    "בעת פתרון בעיה כלשהי בתהליך העבודה בארגון אין צורך לפנות לממונים, עמיתים או כפופים לנו בשאלות הבהרה. אם יש צורך במידע- ניתן לחפשו באופן עצמאי",
+    "לעיתים מומלץ לבדוק מה עוד אפשר לשפר גם אם משמעות הדבר היא אי עמידה בלוח הזמנים שהוגדר לביצוע המשימה",
+    "לעיתים עדיף להעז ולקחת סיכונים",
+    "יש להבין כיצד מרכיבים ותהליכים מסוימים בארגון משפיעים על הדרך בה נעשים דברים במרכיבים ובתהליכים אחרים של הארגון",
+    "כאשר מציגים מוצר חדש הדרוש לעבודה בפעם הראשונה עדיף לקבל כמה שיותר פרטים והסברים",
+    "יש להבין שעמימות היא חלק בלתי נפרד מהמציאות שבה עובדים",
+    "כדי להגיע להחלטה יש לבחון בעיה מנקודות מבט שונות"
+  ];
 
   const MetricBar = ({ label, value, max = 5, colorClass = "bg-purple-500" }) => (
     <div className="mb-3">
@@ -16,7 +50,6 @@ function StudentAnalyticsView({ student, onBack }) {
     </div>
   );
 
-  // Helper to format timestamps nicely
   const formatTime = (dateString) => {
     if (!dateString) return "N/A";
     const date = new Date(dateString);
@@ -26,7 +59,6 @@ function StudentAnalyticsView({ student, onBack }) {
   return (
     <section className="mt-6 rounded-2xl border border-white/5 bg-[#1e2333]/80 p-8 shadow-2xl backdrop-blur-xl animate-in fade-in duration-300" dir="ltr">
       
-      {/* Header with Back Button */}
       <div className="mb-8 flex items-center justify-between border-b border-white/10 pb-6">
         <div>
           <button 
@@ -44,7 +76,6 @@ function StudentAnalyticsView({ student, onBack }) {
       </div>
 
       <div className="grid gap-8 lg:grid-cols-2">
-        {/* Session Stats */}
         <div className="col-span-1 space-y-4 lg:col-span-2">
           <h3 className="text-xl font-bold text-white">Session Performance</h3>
           <div className="grid grid-cols-3 gap-6">
@@ -63,7 +94,6 @@ function StudentAnalyticsView({ student, onBack }) {
           </div>
         </div>
 
-        {/* FULL PRE-TASK SURVEY */}
         <div className="rounded-xl border border-white/5 bg-[#2a2f42]/40 p-6">
           <h3 className="mb-6 text-xl font-bold text-indigo-300">Pre-Task Profile</h3>
           {student.preTask ? (
@@ -90,14 +120,27 @@ function StudentAnalyticsView({ student, onBack }) {
               {student.preTask.likertAnswers && Object.keys(student.preTask.likertAnswers).length > 0 && (
                 <div className="border-t border-white/10 pt-4">
                   <p className="mb-3 text-xs font-bold uppercase tracking-wider text-slate-400">Systems Thinking Assessment (27 Questions)</p>
-                  <div className="grid grid-cols-3 gap-3 rounded-lg bg-black/20 p-4 sm:grid-cols-4 md:grid-cols-5">
-                    {Object.entries(student.preTask.likertAnswers).map(([qKey, answer]) => (
-                      <div key={qKey} className="flex justify-between border-b border-white/5 p-1.5">
-                        <span className="text-xs text-slate-400">{qKey}:</span>
-                        <span className="text-sm font-bold text-white">{answer}</span>
-                      </div>
-                    ))}
+                  
+                  <div className="flex flex-col gap-3 rounded-lg bg-black/20 p-4">
+                    {Object.entries(student.preTask.likertAnswers).map(([qKey, answer]) => {
+                      // 1. Convert the DB string "0" into the math number 0
+                      const qIndex = parseInt(qKey, 10);
+                      // 2. Fetch the text from the array safely
+                      const questionText = QUESTIONS_ARRAY[qIndex];
+
+                      return (
+                        <div key={qKey} className="flex items-start justify-between gap-4 border-b border-white/5 pb-2" dir="rtl">
+                          <span className="text-sm text-slate-300">
+                            {questionText ? questionText : `Question text missing for index: ${qIndex}`}
+                          </span>
+                          <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-indigo-500/20 text-sm font-bold text-indigo-300">
+                            {answer}
+                          </span>
+                        </div>
+                      );
+                    })}
                   </div>
+
                 </div>
               )}
 
@@ -121,7 +164,6 @@ function StudentAnalyticsView({ student, onBack }) {
           )}
         </div>
 
-        {/* POST-TASK SURVEY */}
         <div className="rounded-xl border border-white/5 bg-[#2a2f42]/40 p-6">
           <h3 className="mb-6 text-xl font-bold text-green-300">Post-Task Metrics</h3>
           {student.postTask ? (
@@ -132,8 +174,33 @@ function StudentAnalyticsView({ student, onBack }) {
                 <MetricBar label="Questions Helped Thinking" value={student.postTask.didQuestionsHelpThinking} colorClass="bg-blue-400" />
               </div>
               
+              {/* NEW: Post-Task Systems Thinking Assessment List */}
+              {student.postTask.likertAnswers && Object.keys(student.postTask.likertAnswers).length > 0 && (
+                <div className="border-t border-white/10 pt-4 mt-4">
+                  <p className="mb-3 text-xs font-bold uppercase tracking-wider text-slate-400">Systems Thinking Assessment (27 Questions - Post-Task)</p>
+                  
+                  <div className="flex flex-col gap-3 rounded-lg bg-black/20 p-4">
+                    {Object.entries(student.postTask.likertAnswers).map(([qKey, answer]) => {
+                      const qIndex = parseInt(qKey, 10);
+                      const questionText = QUESTIONS_ARRAY[qIndex];
+
+                      return (
+                        <div key={qKey} className="flex items-start justify-between gap-4 border-b border-white/5 pb-2" dir="rtl">
+                          <span className="text-sm text-slate-300">
+                            {questionText ? questionText : `Question text missing for index: ${qIndex}`}
+                          </span>
+                          <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-green-500/20 text-sm font-bold text-green-400">
+                            {answer}
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
               {student.group === "Experimental Group" && (
-                <div className="rounded-lg border border-white/5 bg-black/20 p-4">
+                <div className="rounded-lg border border-white/5 bg-black/20 p-4 mt-4">
                   <p className="mb-1 text-xs font-bold uppercase tracking-wider text-slate-400">Manipulation Check Failed?</p>
                   <p className={`text-lg font-bold ${student.postTask.didBotGiveAnswers ? "text-red-400" : "text-green-400"}`}>
                     {student.postTask.didBotGiveAnswers ? "YES (Bot gave direct answers)" : "NO (Valid data)"}
@@ -153,7 +220,6 @@ function StudentAnalyticsView({ student, onBack }) {
           )}
         </div>
         
-        {/* --- NEW: AI MILESTONE TRIGGERS (GATE EVENTS) --- */}
         <div className="col-span-1 lg:col-span-2 mt-4 rounded-xl border border-white/5 bg-[#2a2f42]/40 p-6">
           <h3 className="mb-4 text-xl font-bold text-emerald-400">Gate Unlocks & Triggers</h3>
           <p className="mb-6 text-sm text-slate-400">

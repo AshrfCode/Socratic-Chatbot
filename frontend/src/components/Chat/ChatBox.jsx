@@ -10,8 +10,6 @@ function ChatBox() {
   const { sessionInfo, updateAfterMessage, updateSessionStatus } = useSession();
 
   // --- THE ANTI-FLASH SHIELD ---
-  // If the global context momentarily drops the session during an update, 
-  // we fall back to this memory so the screen NEVER goes black.
   const safeSessionRef = useRef(sessionInfo);
   if (sessionInfo) {
     safeSessionRef.current = sessionInfo;
@@ -25,7 +23,6 @@ function ChatBox() {
 
   const stableFallbackTime = useRef(Date.now()).current;
 
-  // Use the safeSession everywhere instead of sessionInfo
   const chatId = safeSession?.chatId;
   const sessionId = safeSession?.sessionId;
   const userId = safeSession?.userId;
@@ -70,12 +67,22 @@ function ChatBox() {
 
       setMessages((prev) => {
         const filtered = prev.filter((m) => m._id !== tempId);
-        const updated = [...filtered, response.userMessage];
-        if (response.botMessage) updated.push(response.botMessage);
+        const updated = [...filtered];
+        
+        // Bulletproof Check: Prevents the white screen crash if the backend sends empty data
+        if (response.userMessage) {
+          updated.push(response.userMessage);
+        } else {
+          updated.push(tempUserMessage); 
+        }
+
+        if (response.botMessage) {
+          updated.push(response.botMessage);
+        }
+        
         return updated;
       });
 
-      // This is what was causing the flash before, but our shield protects it now!
       updateAfterMessage(response.session);
     } catch (error) {
       console.error("Failed to send message", error);
@@ -99,7 +106,6 @@ function ChatBox() {
     }
   }
 
-  // Use safeSession here so we never return null once the chat is loaded
   if (!safeSession) return null;
 
   return (
@@ -118,7 +124,11 @@ function ChatBox() {
         </div>
       )}
 
-      <ChatMessages messages={messages} isTyping={isTyping} />
+      {/* THE FIX: Disables typing animation if the student is in the Control Group */}
+      <ChatMessages 
+        messages={messages} 
+        isTyping={safeSession.group === "Control Group" ? false : isTyping} 
+      />
 
       <div className="px-5 pt-2">
         {safeSession.group === "Control Group" ? (

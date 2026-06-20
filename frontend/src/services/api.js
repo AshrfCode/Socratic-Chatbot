@@ -8,7 +8,8 @@
   This keeps the project clean and beginner-friendly.
 */
 
-const API_URL = "http://localhost:5000/api";
+// This tells React: "If we are on Vercel, use the live backend URL. If we are testing locally, use localhost!"
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
 export async function apiGet(endpoint) {
   try {

@@ -1,6 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  darkMode: 'class', // <-- This is the magic line that connects to your Moon/Sun button!
+  darkMode: 'class', // <--- ADD THIS LINE!
   content: [
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",

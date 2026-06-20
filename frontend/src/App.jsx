@@ -28,7 +28,7 @@ function App() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-slate-50 text-slate-900 transition-colors duration-500 dark:bg-slate-950 dark:bg-gradient-to-br dark:from-slate-950 dark:via-purple-900/10 dark:to-slate-950 dark:text-white">
+    <div className="min-h-screen bg-slate-50 text-slate-900 transition-colors duration-300 dark:bg-[#0f121b] dark:text-white">
       
       <Header 
         showLogout={!!(sessionInfo || researcher)} 

@@ -13,7 +13,7 @@ function SidePanel() {
 
   if (loading) {
     return (
-      <aside className="w-full space-y-4 text-white">
+      <aside className="w-full space-y-4">
         <InfoCard title="Session" value="Loading..." />
       </aside>
     );
@@ -21,7 +21,7 @@ function SidePanel() {
 
   if (error || !sessionInfo) {
     return (
-      <aside className="w-full space-y-4 text-white">
+      <aside className="w-full space-y-4">
         <InfoCard title="Error" value="Session data unavailable" />
       </aside>
     );
@@ -42,7 +42,7 @@ function SidePanel() {
   }
 
   return (
-    <aside className="w-full space-y-4 text-white">
+    <aside className="flex w-full flex-col gap-4 lg:gap-6">
       {/* Pass the logic down as props to the presentational component */}
       <SessionInfo 
         sessionInfo={sessionInfo} 

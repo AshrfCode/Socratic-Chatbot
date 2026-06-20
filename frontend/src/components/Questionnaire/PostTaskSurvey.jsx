@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useSession } from "../../Context/SessionContext";
-// 1. FIXED IMPORT NAME: Must match exactly what is in your service file!
 import { submitPostTask } from "../../services/questionnaireService"; 
 
 const SYSTEMS_THINKING_QUESTIONS = [
@@ -34,25 +33,25 @@ const SYSTEMS_THINKING_QUESTIONS = [
 ];
 
 const RadioScaleQuestion = ({ questionText, name, currentValue, onChange }) => (
-  <div className="rounded-lg bg-[#2a2f42]/40 p-4 transition-colors hover:bg-[#2a2f42]/60">
-    <p className="mb-4 text-sm font-medium text-slate-200">{questionText}</p>
+  <div className="rounded-lg border border-slate-200 bg-slate-50 p-4 transition-colors hover:bg-slate-100 dark:border-transparent dark:bg-[#2a2f42]/40 dark:hover:bg-[#2a2f42]/60">
+    <p className="mb-4 text-sm font-medium text-slate-800 dark:text-slate-200">{questionText}</p>
     <div className="flex flex-wrap items-center justify-between gap-2 sm:px-4">
-      <span className="hidden text-xs text-slate-500 sm:block">מועטה מאוד</span>
+      <span className="hidden text-xs text-slate-500 sm:block dark:text-slate-400">מועטה מאוד</span>
       {[1, 2, 3, 4, 5].map((val) => (
         <label key={val} className="flex cursor-pointer flex-col items-center gap-1">
-          <span className="text-sm text-slate-400">{val}</span>
+          <span className="text-sm text-slate-600 dark:text-slate-400">{val}</span>
           <input
             type="radio"
             name={name}
             value={val}
             checked={currentValue === String(val)}
             onChange={(e) => onChange(e.target.value)}
-            className="h-5 w-5 accent-purple-500"
+            className="h-5 w-5 accent-purple-600 dark:accent-purple-500"
             required
           />
         </label>
       ))}
-      <span className="hidden text-xs text-slate-500 sm:block">רבה מאוד</span>
+      <span className="hidden text-xs text-slate-500 sm:block dark:text-slate-400">רבה מאוד</span>
     </div>
   </div>
 );
@@ -68,8 +67,6 @@ function PostTaskSurvey({ onDone }) {
   const [didQuestionsHelpThinking, setDidQuestionsHelpThinking] = useState("");
   const [didBotGiveAnswers, setDidBotGiveAnswers] = useState(null);
   const [feedback, setFeedback] = useState("");
-
-  // 2. FIXED: Removed the stray 'ا' character that was right here!
 
   const handleLikertChange = (index, value) => {
     setLikertAnswers((prev) => ({ ...prev, [index]: value }));
@@ -98,14 +95,9 @@ function PostTaskSurvey({ onDone }) {
     };
 
     try {
-      // 3. FIXED: Using the correct function name here too
       await submitPostTask(postTaskData);
-      
       console.log("Submitting Post-Task:", postTaskData);
-      
       await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Force redirect to Home
       window.location.href = "/"; 
     } catch (error) {
       console.error("Failed to submit survey", error);
@@ -118,17 +110,17 @@ function PostTaskSurvey({ onDone }) {
   return (
     <div className="mx-auto w-full max-w-4xl px-4 py-8" dir="rtl">
       <div className="mb-8 text-center animate-in fade-in slide-in-from-bottom-4">
-        <h1 className="text-3xl font-extrabold text-white md:text-4xl">שאלון מסכם</h1>
-        <p className="mt-3 text-slate-400">אנא ענה על השאלות הבאות בכנות. תשובותיך יעזרו לנו במחקר.</p>
+        <h1 className="text-3xl font-extrabold text-slate-900 md:text-4xl dark:text-white">שאלון מסכם</h1>
+        <p className="mt-3 text-slate-600 dark:text-slate-400">אנא ענה על השאלות הבאות בכנות. תשובותיך יעזרו לנו במחקר.</p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-8 animate-in fade-in duration-700">
+      <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8 animate-in fade-in duration-700">
         
         {/* SECTION 1: SYSTEMS THINKING (27 Questions) */}
-        <section className="rounded-2xl border border-white/5 bg-[#1e2333]/80 p-6 shadow-2xl backdrop-blur-xl md:p-8">
-          <div className="mb-6 border-b border-white/10 pb-4">
-            <h2 className="text-2xl font-bold text-indigo-400">חשיבה מערכתית</h2>
-            <p className="mt-2 text-sm text-slate-300">
+        <section className="rounded-2xl border border-slate-200 bg-white/80 p-5 shadow-xl backdrop-blur-xl sm:p-6 md:p-8 dark:border-white/5 dark:bg-[#1e2333]/80 dark:shadow-2xl">
+          <div className="mb-6 border-b border-slate-200 pb-4 dark:border-white/10">
+            <h2 className="text-xl sm:text-2xl font-bold text-indigo-600 dark:text-indigo-400">חשיבה מערכתית</h2>
+            <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">
               סמן את מידת ההסכמה שלך לכל אחת מהשאלות הבאות בסולם של 1 (במידה מועטה מאוד) עד 5 (במידה רבה מאוד):
             </p>
           </div>
@@ -147,10 +139,10 @@ function PostTaskSurvey({ onDone }) {
         </section>
 
         {/* SECTION 2: EXPERIENCE METRICS */}
-        <section className="rounded-2xl border border-white/5 bg-[#1e2333]/80 p-6 shadow-2xl backdrop-blur-xl md:p-8">
-          <div className="mb-6 border-b border-white/10 pb-4">
-            <h2 className="text-2xl font-bold text-green-400">חווית המשתמש והמשימה</h2>
-            <p className="mt-2 text-sm text-slate-300">
+        <section className="rounded-2xl border border-slate-200 bg-white/80 p-5 shadow-xl backdrop-blur-xl sm:p-6 md:p-8 dark:border-white/5 dark:bg-[#1e2333]/80 dark:shadow-2xl">
+          <div className="mb-6 border-b border-slate-200 pb-4 dark:border-white/10">
+            <h2 className="text-xl sm:text-2xl font-bold text-green-600 dark:text-green-400">חווית המשתמש והמשימה</h2>
+            <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">
               אנא דרג את החוויה שלך במשימה (1 = מועטה מאוד, 5 = רבה מאוד):
             </p>
           </div>
@@ -179,14 +171,14 @@ function PostTaskSurvey({ onDone }) {
 
         {/* SECTION 3: MANIPULATION CHECK (Only for Experimental Group) */}
         {sessionInfo?.group === "Experimental Group" && (
-          <section className="rounded-2xl border border-white/5 bg-[#1e2333]/80 p-6 shadow-2xl backdrop-blur-xl md:p-8">
-            <h2 className="mb-4 text-xl font-bold text-orange-400">בדיקת מערכת</h2>
-            <p className="mb-4 text-sm text-slate-300">האם הבוט סיפק לך תשובות ישירות ופתרונות, או רק שאל שאלות מנחות?</p>
-            <div className="flex gap-4">
+          <section className="rounded-2xl border border-slate-200 bg-white/80 p-5 shadow-xl backdrop-blur-xl sm:p-6 md:p-8 dark:border-white/5 dark:bg-[#1e2333]/80 dark:shadow-2xl">
+            <h2 className="mb-4 text-lg sm:text-xl font-bold text-orange-600 dark:text-orange-400">בדיקת מערכת</h2>
+            <p className="mb-4 text-sm text-slate-600 dark:text-slate-300">האם הבוט סיפק לך תשובות ישירות ופתרונות, או רק שאל שאלות מנחות?</p>
+            <div className="flex flex-col gap-4 sm:flex-row">
               <label className={`flex-1 cursor-pointer rounded-xl border p-4 text-center font-bold transition-all ${
                   didBotGiveAnswers === false
-                    ? "border-orange-500 bg-orange-500/20 text-orange-300"
-                    : "border-white/10 bg-black/20 text-slate-400 hover:border-orange-500/50"
+                    ? "border-orange-500 bg-orange-50 text-orange-700 dark:bg-orange-500/20 dark:text-orange-300"
+                    : "border-slate-200 bg-slate-50 text-slate-600 hover:border-orange-300 dark:border-white/10 dark:bg-black/20 dark:text-slate-400 dark:hover:border-orange-500/50"
                 }`}
               >
                 <input 
@@ -200,8 +192,8 @@ function PostTaskSurvey({ onDone }) {
               </label>
               <label className={`flex-1 cursor-pointer rounded-xl border p-4 text-center font-bold transition-all ${
                   didBotGiveAnswers === true
-                    ? "border-orange-500 bg-orange-500/20 text-orange-300"
-                    : "border-white/10 bg-black/20 text-slate-400 hover:border-orange-500/50"
+                    ? "border-orange-500 bg-orange-50 text-orange-700 dark:bg-orange-500/20 dark:text-orange-300"
+                    : "border-slate-200 bg-slate-50 text-slate-600 hover:border-orange-300 dark:border-white/10 dark:bg-black/20 dark:text-slate-400 dark:hover:border-orange-500/50"
                 }`}
               >
                 <input 
@@ -218,13 +210,13 @@ function PostTaskSurvey({ onDone }) {
         )}
 
         {/* SECTION 4: OPEN FEEDBACK */}
-        <section className="rounded-2xl border border-white/5 bg-[#1e2333]/80 p-6 shadow-2xl backdrop-blur-xl md:p-8">
-          <h2 className="mb-4 text-xl font-bold text-blue-400">הערות נוספות (רשות)</h2>
+        <section className="rounded-2xl border border-slate-200 bg-white/80 p-5 shadow-xl backdrop-blur-xl sm:p-6 md:p-8 dark:border-white/5 dark:bg-[#1e2333]/80 dark:shadow-2xl">
+          <h2 className="mb-4 text-lg sm:text-xl font-bold text-blue-600 dark:text-blue-400">הערות נוספות (רשות)</h2>
           <textarea
             value={feedback}
             onChange={(e) => setFeedback(e.target.value)}
             placeholder="האם יש לך הארות, הערות או תובנות נוספות על המערכת?"
-            className="h-32 w-full resize-none rounded-xl border border-white/10 bg-black/20 p-4 text-slate-200 placeholder-slate-500 focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
+            className="h-32 w-full resize-none rounded-xl border border-slate-200 bg-slate-50 p-4 text-slate-900 placeholder-slate-400 transition-all focus:border-purple-500 focus:bg-white focus:outline-none focus:ring-1 focus:ring-purple-500 dark:border-white/10 dark:bg-black/20 dark:text-slate-200 dark:placeholder-slate-500 dark:focus:border-purple-500"
           ></textarea>
         </section>
 
@@ -235,8 +227,8 @@ function PostTaskSurvey({ onDone }) {
             disabled={!isFormValid || isSubmitting}
             className={`flex w-full items-center justify-center rounded-xl px-8 py-4 text-lg font-bold transition-all md:w-auto ${
               isFormValid && !isSubmitting
-                ? "bg-gradient-to-r from-indigo-500 to-purple-600 text-white hover:from-indigo-400 hover:to-purple-500 hover:shadow-lg hover:shadow-purple-500/30"
-                : "cursor-not-allowed bg-slate-800 text-slate-500"
+                ? "bg-gradient-to-r from-purple-600 to-indigo-600 text-white hover:scale-[1.02] hover:shadow-lg hover:shadow-purple-500/30 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-[#1e2333]"
+                : "cursor-not-allowed bg-slate-200 text-slate-400 dark:bg-slate-800 dark:text-slate-500"
             }`}
           >
             {isSubmitting ? (

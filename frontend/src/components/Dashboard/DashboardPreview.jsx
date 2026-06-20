@@ -56,17 +56,17 @@ function DashboardPreview() {
   }
 
   return (
-    <section className="mt-6 rounded-2xl border border-white/5 bg-[#1e2333]/80 p-8 shadow-2xl backdrop-blur-xl">
+    <section className="mt-6 rounded-2xl border border-slate-200 bg-white/80 p-4 shadow-xl backdrop-blur-xl transition-colors sm:p-6 lg:p-8 dark:border-white/5 dark:bg-[#1e2333]/80 dark:shadow-2xl">
       <DashboardHeader />
 
       {loading && (
         <div className="flex h-32 items-center justify-center">
-          <span className="h-8 w-8 animate-spin rounded-full border-4 border-purple-500 border-t-transparent"></span>
+          <span className="h-8 w-8 animate-spin rounded-full border-4 border-slate-200 border-t-purple-600 dark:border-white/10 dark:border-t-purple-500"></span>
         </div>
       )}
 
       {error && (
-        <div className="mb-6 rounded-lg border border-red-500/20 bg-red-500/10 p-4 text-red-400">
+        <div className="mb-6 rounded-lg border border-red-200 bg-red-50 p-4 text-sm font-medium text-red-600 dark:border-red-500/20 dark:bg-red-500/10 dark:text-red-400">
           {error}
         </div>
       )}

@@ -64,8 +64,10 @@ function CountdownTimer({ startTime, initialMinutes = 20, onTimeUp, onReminder }
 
   return (
     <span 
-      className={`font-mono text-xl font-bold tracking-wider transition-colors ${
-        timeLeft <= 120 && timeLeft > 0 ? "animate-pulse text-red-400" : "text-white"
+      className={`font-mono text-lg sm:text-xl font-bold tracking-wider transition-colors ${
+        timeLeft <= 120 && timeLeft > 0 
+          ? "animate-pulse text-red-600 dark:text-red-400" 
+          : "text-slate-900 dark:text-white"
       }`}
     >
       {formattedTime}

@@ -7,7 +7,7 @@ const StudentProgress = require("../models/StudentProgress");
 const {
   generateSocraticResponse,
   generateSocraticHint,
-} = require("../services/geminiService");
+} = require("../services/openaiService");
 
 const {
   evaluateStudentMessage,

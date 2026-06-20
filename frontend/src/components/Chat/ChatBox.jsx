@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { getChatMessages, sendChatMessage } from "../../services/chatService";
 import ChatHeader from "./ChatHeader";
 import ChatMessages from "./ChatMessages";
@@ -9,12 +9,22 @@ import { useSession } from "../../Context/SessionContext";
 function ChatBox() {
   const { sessionInfo, updateAfterMessage, updateSessionStatus } = useSession();
 
+  const safeSessionRef = useRef(sessionInfo);
+  if (sessionInfo) {
+    safeSessionRef.current = sessionInfo;
+  }
+  const safeSession = sessionInfo || safeSessionRef.current;
+
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
+  const [reminderBanner, setReminderBanner] = useState(null);
+  const [isTyping, setIsTyping] = useState(false);
 
-  const chatId = sessionInfo?.chatId;
-  const sessionId = sessionInfo?.sessionId;
-  const userId = sessionInfo?.userId;
+  const stableFallbackTime = useRef(Date.now()).current;
+
+  const chatId = safeSession?.chatId;
+  const sessionId = safeSession?.sessionId;
+  const userId = safeSession?.userId;
 
   useEffect(() => {
     async function loadMessages() {
@@ -33,33 +43,59 @@ function ChatBox() {
     if (!input.trim()) return;
     if (!chatId || !sessionId || !userId) return;
 
+    const textToSend = input;
+    setInput("");
+
+    const tempId = "temp-" + Date.now();
+    const tempUserMessage = {
+      _id: tempId,
+      sender: "user",
+      text: textToSend,
+      createdAt: new Date().toISOString(),
+    };
+
+    setMessages((prev) => [...prev, tempUserMessage]);
+    setIsTyping(true);
+
     try {
       const response = await sendChatMessage(chatId, {
         sessionId,
         studentId: userId,
-        text: input,
+        text: textToSend,
       });
 
       setMessages((prev) => {
-        const updated = [...prev, response.userMessage];
-        if (response.botMessage) updated.push(response.botMessage);
+        const filtered = prev.filter((m) => m._id !== tempId);
+        const updated = [...filtered];
+        
+        if (response.userMessage) {
+          updated.push(response.userMessage);
+        } else {
+          updated.push(tempUserMessage); 
+        }
+
+        if (response.botMessage) {
+          updated.push(response.botMessage);
+        }
+        
         return updated;
       });
 
       updateAfterMessage(response.session);
-      setInput("");
     } catch (error) {
       console.error("Failed to send message", error);
+      setMessages((prev) => prev.filter((m) => m._id !== tempId));
+      setInput(textToSend);
+    } finally {
+      setIsTyping(false);
     }
   }
 
-  // --- TIMER LOGIC ---
   function handleTimerReminder(messageText) {
-    // Inject the neutral F-08 reminder directly into the chat log!
-    setMessages((prev) => [
-      ...prev,
-      { _id: Date.now().toString(), sender: "system", text: messageText }
-    ]);
+    setReminderBanner(messageText);
+    setTimeout(() => {
+      setReminderBanner(null);
+    }, 8000);
   }
 
   function handleTimeUp() {
@@ -68,18 +104,32 @@ function ChatBox() {
     }
   }
 
-  if (!sessionInfo) return null;
+  if (!safeSession) return null;
 
   return (
-    <section className="flex h-[650px] flex-col overflow-hidden rounded-2xl border border-white/5 bg-[#1e2333]/80 shadow-2xl backdrop-blur-xl">
-      {/* Pass the timer logic down to the header */}
-      <ChatHeader onTimeUp={handleTimeUp} onReminder={handleTimerReminder} />
+    <section className="relative flex h-[75vh] min-h-[500px] sm:h-[650px] w-full flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white/80 shadow-xl backdrop-blur-xl transition-colors dark:border-white/5 dark:bg-[#1e2333]/80 dark:shadow-2xl">
+      <ChatHeader 
+        startTime={safeSession?.createdAt || stableFallbackTime} 
+        onTimeUp={handleTimeUp} 
+        onReminder={handleTimerReminder} 
+      />
 
-      <ChatMessages messages={messages} />
+      {reminderBanner && (
+        <div className="absolute left-0 right-0 top-24 z-50 mx-auto w-[90%] max-w-sm animate-in fade-in slide-in-from-top-4 duration-500 sm:w-fit">
+          <div className="rounded-full border border-purple-200 bg-purple-50 px-4 py-2 text-center text-xs font-medium text-purple-700 shadow-lg backdrop-blur-md sm:px-6 sm:text-sm dark:border-purple-500/30 dark:bg-purple-500/20 dark:text-purple-200">
+            ⚠️ {reminderBanner}
+          </div>
+        </div>
+      )}
 
-      <div className="px-5 pt-2">
-        {sessionInfo.group === "Control Group" ? (
-          <div className="flex items-center gap-3 rounded-lg border border-yellow-500/20 bg-yellow-500/10 p-3 text-sm text-yellow-200 backdrop-blur-md">
+      <ChatMessages 
+        messages={messages} 
+        isTyping={safeSession.group === "Control Group" ? false : isTyping} 
+      />
+
+      <div className="px-4 pt-2 sm:px-5">
+        {safeSession.group === "Control Group" ? (
+          <div className="flex items-center gap-3 rounded-lg border border-yellow-200 bg-yellow-50 p-3 text-xs sm:text-sm text-yellow-800 backdrop-blur-md dark:border-yellow-500/20 dark:bg-yellow-500/10 dark:text-yellow-200">
             <svg className="h-5 w-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
             </svg>

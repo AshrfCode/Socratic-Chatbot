@@ -1,11 +1,11 @@
 function InfoCard({ title, value }) {
   return (
-    <div className="rounded-2xl bg-slate-900 p-4">
-      <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+    <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 transition-colors sm:p-4 dark:border-white/5 dark:bg-slate-900/50">
+      <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-500 sm:text-xs dark:text-slate-400">
         {title}
       </p>
 
-      <p className="mt-1 text-lg font-bold text-white">
+      <p className="mt-0.5 text-sm font-bold text-slate-900 sm:mt-1 sm:text-lg dark:text-white">
         {value}
       </p>
     </div>

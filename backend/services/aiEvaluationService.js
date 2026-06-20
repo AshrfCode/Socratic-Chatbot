@@ -1,7 +1,7 @@
 const Session = require("../models/Session");
 const StudentProgress = require("../models/StudentProgress");
 const GateEvent = require("../models/GateEvent");
-const { evaluateLayerWithGemini } = require("./geminiService");
+const { evaluateLayerWithOpenAI } = require("./openaiService");
 
 const LAYERS = ["Broad Context", "Structure", "Dynamics", "Evaluation"];
 
@@ -37,7 +37,7 @@ async function evaluateStudentMessage({ studentId, sessionId, messageText }) {
 
   const currentLayer = session.currentLayer;
 
-  const aiEvaluation = await evaluateLayerWithGemini({
+  const aiEvaluation = await evaluateLayerWithOpenAI({
     currentLayer,
     studentMessage: messageText,
   });
@@ -49,6 +49,7 @@ async function evaluateStudentMessage({ studentId, sessionId, messageText }) {
       if (gateName && !session.unlockedGates.includes(gateName)) {
         session.unlockedGates.push(gateName);
 
+        // Your Database Save Logic - Works perfectly!
         await GateEvent.create({
           studentId,
           sessionId,

@@ -1,6 +1,7 @@
 import CountdownTimer from "../CountdownTimer/CountdownTimer"; // Ensure path is correct!
 
-function ChatHeader({ onTimeUp, onReminder }) {
+// NEW: Added startTime to the props
+function ChatHeader({ startTime, onTimeUp, onReminder }) {
   return (
     <div className="relative z-10 flex items-center justify-between border-b border-white/5 bg-[#2a2f42]/50 p-5">
       <div>
@@ -29,6 +30,7 @@ function ChatHeader({ onTimeUp, onReminder }) {
           Time Remaining
         </span>
         <CountdownTimer 
+          startTime={startTime} // <-- NEW: Passing the DB start time into the timer!
           initialMinutes={20} 
           onTimeUp={onTimeUp} 
           onReminder={onReminder} 

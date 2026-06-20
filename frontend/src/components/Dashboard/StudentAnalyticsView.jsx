@@ -16,6 +16,13 @@ function StudentAnalyticsView({ student, onBack }) {
     </div>
   );
 
+  // Helper to format timestamps nicely
+  const formatTime = (dateString) => {
+    if (!dateString) return "N/A";
+    const date = new Date(dateString);
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+  };
+
   return (
     <section className="mt-6 rounded-2xl border border-white/5 bg-[#1e2333]/80 p-8 shadow-2xl backdrop-blur-xl animate-in fade-in duration-300" dir="ltr">
       
@@ -145,6 +152,54 @@ function StudentAnalyticsView({ student, onBack }) {
              <div className="flex h-40 items-center justify-center rounded-lg border border-dashed border-white/10 bg-black/10"><p className="text-slate-500">Not completed yet</p></div>
           )}
         </div>
+        
+        {/* --- NEW: AI MILESTONE TRIGGERS (GATE EVENTS) --- */}
+        <div className="col-span-1 lg:col-span-2 mt-4 rounded-xl border border-white/5 bg-[#2a2f42]/40 p-6">
+          <h3 className="mb-4 text-xl font-bold text-emerald-400">Gate Unlocks & Triggers</h3>
+          <p className="mb-6 text-sm text-slate-400">
+            A chronological log of when this student unlocked each AI gate and the exact reasoning they provided.
+          </p>
+          
+          <div className="max-h-96 overflow-y-auto rounded-xl border border-white/10 bg-[#1e2333]/50 p-1">
+            <table className="w-full text-left text-sm text-slate-300">
+              <thead className="sticky top-0 bg-[#1e2333] text-xs uppercase tracking-wider text-slate-400 shadow-sm z-10">
+                <tr>
+                  <th className="px-4 py-3 font-semibold">Time</th>
+                  <th className="px-4 py-3 font-semibold">Layer</th>
+                  <th className="px-4 py-3 font-semibold">Gate Unlocked</th>
+                  <th className="px-4 py-3 font-semibold w-1/2">Triggering Message</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-white/5">
+                {student.gateEvents && student.gateEvents.length > 0 ? (
+                  student.gateEvents.map((gate, idx) => (
+                    <tr key={idx} className="transition-colors hover:bg-white/5">
+                      <td className="whitespace-nowrap px-4 py-4 text-slate-400">
+                        {formatTime(gate.createdAt)}
+                      </td>
+                      <td className="px-4 py-4 text-slate-300">
+                        <span className="rounded-md bg-white/5 px-2 py-1 text-xs">{gate.layer}</span>
+                      </td>
+                      <td className="px-4 py-4 font-semibold text-emerald-400">
+                        {gate.gateName}
+                      </td>
+                      <td className="px-4 py-4 italic text-slate-300" dir="rtl">
+                        "{gate.trigger}"
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="4" className="px-4 py-8 text-center text-slate-500">
+                      No gates have been unlocked by this student yet.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
       </div>
     </section>
   );
